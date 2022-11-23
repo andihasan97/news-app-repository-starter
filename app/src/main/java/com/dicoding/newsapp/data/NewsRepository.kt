@@ -20,6 +20,17 @@ class NewsRepository private constructor(
     private val appExecutors: AppExecutors
 ) {
     private val result = MediatorLiveData<Result<List<NewsEntity>>>()
+    
+    // tanda bookmark
+    fun getBookmarkedNews(): LiveData<List<NewsEntity>> {
+        return newsDao.getBookmarkedNews()
+    }
+    fun setBookmarkedNews(news: NewsEntity, bookmarkState: Boolean) {
+        appExecutors.diskIO.execute {
+            news.isBookmarked = bookmarkState
+            newsDao.updateNews(news)
+        }
+    }
 
     fun getHeadlineNews(): LiveData<Result<List<NewsEntity>>> {
         result.value = Result.Loading
